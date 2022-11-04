@@ -3,10 +3,11 @@ import AppContext from "../context/AppContext";
 import Accordion from "./Accordion";
 
 function Content({ type, title, children }) {
-  const { setSelectedPost } = useContext(AppContext);
+  const { setSelectedPost, openPost, setOpenPost } = useContext(AppContext);
 
   function selectedFunction() {
     setSelectedPost(title);
+    setOpenPost([...openPost, title]);
   }
 
   return type === "directory" ? (

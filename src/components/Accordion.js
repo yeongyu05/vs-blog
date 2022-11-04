@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { VscChevronRight, VscChevronDown } from "react-icons/vsc";
-import { AiOutlineStepBackward } from "react-icons/ai";
 
 function Accordion({ title, children, isBold }) {
   const [expanded, setExpanded] = useState(false);
