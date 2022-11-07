@@ -2,12 +2,16 @@ import { useContext } from "react";
 import AppContext from "../context/AppContext";
 import Accordion from "./Accordion";
 
-function Content({ type, title, children }) {
+function Content({ type, title, children, path }) {
   const { setSelectedPost, openPost, setOpenPost } = useContext(AppContext);
 
   function selectedFunction() {
-    setSelectedPost(title);
-    setOpenPost([...openPost, title]);
+    setSelectedPost(path);
+    if (openPost.includes(path)) return;
+    setOpenPost([...openPost, path]);
+    // if (!openPost.includes(path)) {
+    //   setOpenPost([...openPost, path]);
+    // }
   }
 
   return type === "directory" ? (
