@@ -8,7 +8,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   *:not(svg, path) {
-    color: ${({theme}) => theme.color.text};
+    color: ${({ theme }) => theme.color.text};
   }
 
   body {
@@ -29,7 +29,7 @@ export const GlobalStyle = createGlobalStyle`
   *::-webkit-scrollbar-thumb {
     height: 10%; /* 스크롤바의 길이 */
     background: ${({ theme }) => theme.color.secondary}; /* 스크롤바의 색상 */
-  
+
     border-radius: 10px;
   }
   

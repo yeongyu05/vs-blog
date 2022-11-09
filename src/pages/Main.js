@@ -10,8 +10,15 @@ import PostWrap from "../components/PostWrap";
 
 function Main() {
   const [selected, setSelected] = useState(null);
-  const { setSelectedPost, selectedPost, postData, setOpenPost, openPost } =
-    useContext(AppContext);
+  const {
+    theme,
+    setTheme,
+    setSelectedPost,
+    selectedPost,
+    postData,
+    setOpenPost,
+    openPost,
+  } = useContext(AppContext);
 
   const listArr = [
     {
@@ -50,17 +57,27 @@ function Main() {
   return (
     <Wrap>
       <LeftBar>
-        {listArr.map((one, index) => (
-          <IconWrap
-            selected={selected === index}
+        <div>
+          {listArr.map((one, index) => (
+            <IconWrap
+              selected={selected === index}
+              onClick={() => {
+                setSelected(selected === index ? null : index);
+              }}
+              key={index}
+            >
+              {one.icon}
+            </IconWrap>
+          ))}
+        </div>
+        <div>
+          <div
+            className={theme}
             onClick={() => {
-              setSelected(selected === index ? null : index);
+              setTheme(theme === "dark" ? "light" : "dark");
             }}
-            key={index}
-          >
-            {one.icon}
-          </IconWrap>
-        ))}
+          ></div>
+        </div>
       </LeftBar>
 
       {selected !== null && listArr[selected] && (
@@ -102,7 +119,31 @@ function Main() {
             );
           })}
         </RightHeader>
-        <RightContent selected={selected}>{selectedPost}</RightContent>
+        <RightContent selected={selected}>
+          {(() => {
+            const data = getPostOne(postData, selectedPost);
+
+            return (
+              data && (
+                <>
+                  <p>{data.path?.replaceAll("/", " > ")}</p>
+                  <div>
+                    <h1>{data.title}</h1>
+                    <p>
+                      <strong>Yeongyu</strong> | {data.data?.date}
+                    </p>
+                    <div>
+                      {data.data?.tag.map((one, index) => (
+                        <span key={index}>{one}</span>
+                      ))}
+                    </div>
+                    <div>{data.data?.content}</div>
+                  </div>
+                </>
+              )
+            );
+          })()}
+        </RightContent>
       </RightWrap>
     </Wrap>
   );
@@ -123,7 +164,7 @@ const RightHeader = styled.div`
   height: 50px;
   display: flex;
   overflow-x: scroll;
-  background: ${({theme}) => theme.color.secondary};
+  background: ${({ theme }) => theme.color.secondary};
 
   ::-webkit-scrollbar-thumb {
     display: none;
@@ -137,12 +178,12 @@ const RightHeader = styled.div`
     width: 150px;
     min-width: 150px;
     padding: 10px;
-    background: ${({theme}) => theme.color.secondary};
+    background: ${({ theme }) => theme.color.secondary};
     position: relative;
     cursor: pointer;
 
     &.selected {
-      background: ${({theme}) => theme.color.primary};
+      background: ${({ theme }) => theme.color.primary};
     }
 
     &:not(.selected) > span {
@@ -163,11 +204,42 @@ const RightHeader = styled.div`
 `;
 
 const RightContent = styled.div`
-  background: ${({theme}) => theme.color.primary};
   width: 100%;
   height: calc(100% - 50px);
+  background: ${({ theme }) => theme.color.primary};
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  > div:first-child {
+  > p {
+    width: 100%;
+    color: #7a7a7a;
+  }
+
+  > div {
+    width: 100%;
+    max-width: 600px;
+    > h1 {
+      padding: 30px 0 10px 0;
+    }
+
+    > p {
+      padding-bottom: 20px;
+      margin-bottom: 10px;
+      color: #7a7a7a;
+      border-bottom: 1px solid ${({ theme }) => theme.color.selected};
+    }
+
+    > div:nth-child(3) {
+      padding: 10px 0 20px 0;
+      > span {
+        padding: 5px 10px;
+        margin-right: 10px;
+        border-radius: 10px;
+        background: ${({ theme }) => theme.color.selected};
+      }
+    }
   }
 `;
 
@@ -177,10 +249,13 @@ const IconWrap = styled.div`
   padding: 10px 0;
   cursor: pointer;
 
-  border-left: ${({ theme, selected }) => `${selected ? 2 : 0}px solid ${theme.color.text}`};
+  border-left: ${({ theme, selected }) =>
+    `${selected ? 2 : 0}px solid ${theme.color.text}`};
 
   > svg {
-    color: ${({ theme, selected }) =>selected ? theme.color.text : "#7a7a7a"};}
+    color: ${({ theme, selected }) =>
+      selected ? theme.color.text : "#7a7a7a"};
+  }
 `;
 
 const Wrap = styled.div`
@@ -192,14 +267,50 @@ const LeftBar = styled.div`
   width: 50px;
   min-width: 50px;
   height: 100%;
-  background: ${({theme}) => theme.color.third};
+  background: ${({ theme }) => theme.color.third};
+
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+
+  > div:last-child {
+    padding-bottom: 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    > div {
+      height: 50px;
+      width: 30px;
+      border: 1px solid ${({ theme }) => theme.color.text};
+      background: 1px solid ${({ theme }) => theme.color.text};
+      border-radius: 50px;
+      position: relative;
+      cursor: pointer;
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 4px;
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+        background: ${({ theme }) => theme.color.text};
+        transition: 0.3s;
+      }
+      &.light::after {
+        top: 26px;
+      }
+    }
+  }
 `;
 
 const LeftContent = styled.div`
   width: 320px;
   min-width: 320px;
   height: 100%;
-  background: ${({theme}) => theme.color.secondary};
+  background: ${({ theme }) => theme.color.secondary};
   padding: 10px;
 
   > p {
