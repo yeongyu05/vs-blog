@@ -2,13 +2,17 @@ import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { HiOutlineDocument } from "react-icons/hi";
 import { AiOutlineSearch } from "react-icons/ai";
+import remarkGfm from "remark-gfm";
+import ReactMarkdown from "react-markdown";
+import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/default-highlight";
+import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
 import Accordion from "../components/Accordion";
 import Content from "../components/Content";
 import AppContext from "../context/AppContext";
 import { getPostOne } from "../common/common.function";
 import PostWrap from "../components/PostWrap";
-import remarkGfm from "remark-gfm";
-import ReactMarkdown from "react-markdown";
+import Search from "./Search";
 
 function Main() {
   const [selected, setSelected] = useState(null);
@@ -52,7 +56,7 @@ function Main() {
     {
       icon: <AiOutlineSearch size={24} />,
       path: "SEARCH",
-      content: <p>111</p>,
+      content: <Search />,
     },
   ];
 
@@ -142,10 +146,36 @@ function Main() {
                         <span key={index}>{one}</span>
                       ))}
                     </div>
-                    <div>
+                    <div className="markdown">
                       <ReactMarkdown
                         children={data.data?.content}
                         remarkPlugins={[remarkGfm]}
+                        components={{
+                          code({
+                            node,
+                            inline,
+                            className,
+                            children,
+                            ...props
+                          }) {
+                            const match = /language-(\w+)/.exec(
+                              className || ""
+                            );
+                            return !inline && match ? (
+                              <SyntaxHighlighter
+                                children={String(children).replace(/\n$/, "")}
+                                style={dark}
+                                language={match[1]}
+                                PreTag="div"
+                                {...props}
+                              />
+                            ) : (
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            );
+                          },
+                        }}
                       />
                     </div>
                   </div>
@@ -221,6 +251,7 @@ const RightContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-y: scroll;
 
   > p {
     width: 100%;
@@ -248,6 +279,13 @@ const RightContent = styled.div`
         margin-right: 10px;
         border-radius: 10px;
         background: ${({ theme }) => theme.color.selected};
+      }
+    }
+
+    > div:last-child.markdown {
+      h1 {
+        color: pink;
+        padding: 10px 0 30px 0;
       }
     }
   }
