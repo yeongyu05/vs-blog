@@ -24,6 +24,7 @@ function Main() {
     postData,
     setOpenPost,
     openPost,
+    selectedTag,
   } = useContext(AppContext);
 
   const listArr = [
@@ -60,6 +61,8 @@ function Main() {
     },
   ];
 
+  const data = getPostOne(postData, selectedPost);
+
   return (
     <Wrap>
       <LeftBar>
@@ -94,46 +97,56 @@ function Main() {
       )}
 
       <RightWrap selected={selected}>
-        <RightHeader visible={openPost.length !== 0 ? true : false}>
-          {openPost.map((one, index) => {
-            const data = getPostOne(postData, one);
+        {selectedTag ? (
+          <RightTagContent>
+            <h2>
+              {selectedTag.tagTitle} 관련 글 목록{" "}
+              <span>({selectedTag.path.length}개)</span>
+            </h2>
+            <div>
+              {selectedTag.path.map((path, index) => {
+                const tagData = getPostOne(postData, path);
 
-            return (
-              <div
-                className={selectedPost === one ? "selected" : ""}
-                onClick={() => {
-                  setSelectedPost(data.path);
-                }}
-                key={index}
-              >
-                📝{data.title}
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const openPostFilter = openPost.filter(
-                      (one) => one !== data.path
-                    );
-                    setOpenPost(openPostFilter);
-                    setSelectedPost(
-                      openPostFilter.length !== 0 ? openPostFilter[0] : null
-                    );
-                  }}
-                >
-                  &#215;
-                </span>
-              </div>
-            );
-          })}
-        </RightHeader>
-        <RightContent
-          selected={selected}
-          visible={openPost.length !== 0 ? true : false}
-        >
-          {(() => {
-            const data = getPostOne(postData, selectedPost);
-
-            return (
-              data && (
+                return <div key={index}>{tagData.title}</div>;
+              })}
+            </div>
+          </RightTagContent>
+        ) : (
+          <>
+            <RightHeader visible={openPost.length !== 0 ? true : false}>
+              {openPost.map((one, index) => {
+                return (
+                  <div
+                    className={selectedPost === one ? "selected" : ""}
+                    onClick={() => {
+                      setSelectedPost(data.path);
+                    }}
+                    key={index}
+                  >
+                    📝{data.title}
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const openPostFilter = openPost.filter(
+                          (one) => one !== data.path
+                        );
+                        setOpenPost(openPostFilter);
+                        setSelectedPost(
+                          openPostFilter.length !== 0 ? openPostFilter[0] : null
+                        );
+                      }}
+                    >
+                      &#215;
+                    </span>
+                  </div>
+                );
+              })}
+            </RightHeader>
+            <RightContent
+              selected={selected}
+              visible={openPost.length !== 0 ? true : false}
+            >
+              {data && (
                 <>
                   <p>{data.path?.replaceAll("/", " > ")}</p>
                   <div>
@@ -180,10 +193,10 @@ function Main() {
                     </div>
                   </div>
                 </>
-              )
-            );
-          })()}
-        </RightContent>
+              )}
+            </RightContent>
+          </>
+        )}
       </RightWrap>
     </Wrap>
   );
@@ -241,6 +254,17 @@ const RightHeader = styled.div`
       transform: translateY(-50%);
     }
   }
+`;
+
+const RightTagContent = styled.div`
+  width: 100%;
+  height: 100%;
+  background: ${({ theme }) => theme.color.primary};
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: scroll;
 `;
 
 const RightContent = styled.div`

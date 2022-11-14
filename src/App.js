@@ -22,10 +22,11 @@ const router = createBrowserRouter(
 );
 
 function App() {
+  const [theme, setTheme] = useState("dark");
+  const [selectedTag, setSelectedTag] = useState(null);
   const [selectedPost, setSelectedPost] = useState("");
   const [postData, setPostData] = useState([]);
   const [openPost, setOpenPost] = useState([]);
-  const [theme, setTheme] = useState("dark");
 
   useEffect(() => {
     async function fetch() {
@@ -41,16 +42,19 @@ function App() {
   return (
     <AppContext.Provider
       value={{
-        selectedPost: selectedPost,
-        setSelectedPost: setSelectedPost,
+        selectedPost,
+        setSelectedPost,
 
-        openPost: openPost,
-        setOpenPost: setOpenPost,
+        openPost,
+        setOpenPost,
 
-        postData: postData,
+        postData,
 
-        theme: theme,
-        setTheme: setTheme,
+        theme,
+        setTheme,
+
+        selectedTag,
+        setSelectedTag,
       }}
     >
       <ThemeProvider theme={theme === "dark" ? darkTheme : lightTheme}>
