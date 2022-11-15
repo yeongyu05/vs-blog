@@ -4,11 +4,18 @@ import styled from "styled-components";
 import AppContext from "../context/AppContext";
 
 function PostWrap({ path, title, isClose }) {
-  const { selectedPost, setSelectedPost, openPost, setOpenPost } =
-    useContext(AppContext);
+  const {
+    setSelectedTag,
+    selectedPost,
+    setSelectedPost,
+    openPost,
+    setOpenPost,
+  } = useContext(AppContext);
 
   function selectedFunction() {
     setSelectedPost(path);
+    setSelectedTag(null);
+
     if (openPost.includes(path)) return;
     setOpenPost([...openPost, path]);
   }
@@ -17,6 +24,7 @@ function PostWrap({ path, title, isClose }) {
     <PostWrapStyled
       onClick={selectedFunction}
       className={selectedPost === path ? "selected" : ""}
+      isClose={isClose}
     >
       {
         <span
@@ -46,15 +54,15 @@ const PostWrapStyled = styled.div`
   position: relative;
 
   &:not(.selected):hover {
-    background: ${({theme}) => theme.color.hover};
+    background: ${({ theme }) => theme.color.hover};
   }
 
   &.selected {
-    background: ${({theme}) => theme.color.selected};
+    background: ${({ theme }) => theme.color.selected};
   }
 
   &:hover > span {
-    display: block;
+    display: ${({ isClose }) => (isClose ? "block" : "none")};
   }
 
   > span {
